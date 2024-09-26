@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ isNew ? 'Add Employee' : 'Edit Employee' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item>
+    <ion-label position="stacked">Name</ion-label>
+    <ion-input [(ngModel)]="employee.name"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label position="stacked">Email</ion-label>
+    <ion-input [(ngModel)]="employee.email" type="email"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label position="stacked">Position</ion-label>
+    <ion-input [(ngModel)]="employee.position"></ion-input>
+  </ion-item>
+
+  <ion-button expand="block" (click)="saveEmployee()">Save</ion-button>
+</ion-content>
