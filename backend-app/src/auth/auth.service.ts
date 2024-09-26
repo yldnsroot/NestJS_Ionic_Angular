@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { Employee } from '../employees/employees.entity';
@@ -40,17 +40,27 @@ export class AuthService {
     const payload = { id: user.id, email: user.email, role: user.role };
     
     return {
-      access_token: this.jwtService.sign(payload),
+      token: this.jwtService.sign(payload),
     };
   }
 
   async register(registerDto: RegisterDto): Promise<any> {
-    const hashedPassword = bcrypt.hashSync(registerDto.password, 10);
+    // Check if the email is already in use
+    const existingUser = await this.employeeRepository.findOne({ where: { email: registerDto.email } });
+    if (existingUser) {
+      throw new ConflictException('Email is already in use');
+    }
+
+    // Hash the password
+    const hashedPassword = bcrypt.hashSync(registerDto.password, 8);
+
+    // Create the new employee
     const newUser = this.employeeRepository.create({
       ...registerDto,
-      password: hashedPassword,
+      password: hashedPassword, // Replace plain password with the hashed password
     });
 
+    // Save the new user to the database
     return this.employeeRepository.save(newUser);
   }
 }
